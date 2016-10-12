@@ -20,31 +20,18 @@ const template = `
 `;
 
 /**
- * The `PlayerExperience` requires the `players` to give its approximative
- * position into the `area` (see `src/server/index`) of the experience.
- * The device of the player is then remote controlled by another type of
- * client (i.e. `soloist`) that can control the `start` and `stop` of the
- * synthesizer from its own interface.
+ * Player Experience
  */
 export default class PlayerExperience extends soundworks.Experience {
   constructor(audioFiles) {
     super();
 
-    // the experience requires the following services:
-    // - the `platform` service checks for the availability of the requested
-    //   features of the application, and display the home screen of the
-    //   application
+    // services
     this.require('platform', { features: 'web-audio' });
-    // - the `locator` service provide a view asking for the approximative
-    //   position of the user in the defined `area`
-    this.locator = this.require('locator');
-    // - the `motionInput` service provides an access to the device input
-    // such as accelerationIncludingGravity or deviceorientation
     this.motionInput = this.require('motion-input', { descriptors: ['accelerationIncludingGravity', 'deviceorientation'] });
-    // - the `loader` service simplifies audio files loading
     this.loader = this.require('loader', { files: audioFiles });
 
-    // bind methods to the instance to keep a safe `this` in callbacks
+    // bind
     this.onPlayMessage = this.onPlayMessage.bind(this);
     this.playSound = this.playSound.bind(this);
     this.cart2sph = this.cart2sph.bind(this);
@@ -85,16 +72,16 @@ export default class PlayerExperience extends soundworks.Experience {
     // setup socket listeners for server messages
     this.receive('play', this.onPlayMessage);
 
-    // setup motion input listeners
+    // setup motion input listeners (play spatialized sound on shake)
     if (this.motionInput.isAvailable('accelerationIncludingGravity')) {
       this.motionInput.addListener('accelerationIncludingGravity', (data) => {
 
           // get acceleration data
           const mag = Math.sqrt(data[0] * data[0] + data[1] * data[1] + data[2] * data[2]);
 
-          // play sound on shaking
+          // play sound on shaking (+ limit inputs)
           if (mag > 20 && this.counter_limitInput > 5) {
-            // reset timer
+            // reset limit timer
             this.counter_limitInput = 0;
             // play sound
             this.playSound();
@@ -106,7 +93,7 @@ export default class PlayerExperience extends soundworks.Experience {
     // setup motion input listeners
     if (this.motionInput.isAvailable('deviceorientation')) {
       this.motionInput.addListener('deviceorientation', (data) => {
-        // display info on screen
+        // display orientation info on screen
         data[0] -= this.orientation_offset[0];
         data[1] -= this.orientation_offset[1];
         data[2] -= this.orientation_offset[2];
@@ -120,19 +107,17 @@ export default class PlayerExperience extends soundworks.Experience {
 
     // create touch event source referring to our view
     const surface = new soundworks.TouchSurface(this.view.$el);
-    // setup touch listeners
+    // setup touch listeners (reset orientation on touch)
     surface.addListener('touchstart', (id, normX, normY) => {
       if (this.counter_limitInput > 0){
         // reset timer
         this.counter_limitInput = 0;
         // store local orientation
         this.orientation_offset = this.spatSourceHandler.getListenerOrientation();
-        // play sound
-        // this.playSound();
       }
     });
 
-    // create game loop timer
+    // create game loop callback
     const frameRate = 100; // setInterval loop repeated every ... ms
     window.setInterval(this.setIntervalCallback, frameRate);
   }
@@ -154,30 +139,12 @@ export default class PlayerExperience extends soundworks.Experience {
    * Callback to be executed when receiving the `play` message from the server.
    */
   onPlayMessage(coords) {
-    // console.log('coods: me ', client.coordinates)
-    // console.log('coods: him', coords)
     var rel_pos_cart = [coords[0] - client.coordinates[0], coords[1] - client.coordinates[1], 0];
-    // console.log('coods: rel', rel_pos);
     var rel_pos_sph = this.cart2sph(rel_pos_cart);
     rel_pos_sph = [ rel_pos_sph[0] - this.orientation_offset[0],
                     rel_pos_sph[2] - this.orientation_offset[2],
-                    rel_pos_sph[2] - this.orientation_offset[2]
-                  ];
+                    rel_pos_sph[2] - this.orientation_offset[2] ];
 
-    // if (this.motionInput.isAvailable('deviceorientation')) {
-    //   rel_pos[0] = Math.cos(this.orientation[0] * (Math.PI / 180)) * rel_pos[0]
-    //              + Math.sin(this.orientation[1] * (Math.PI / 180)) * rel_pos[1];
-    //   rel_pos[1] = Math.cos(this.orientation[0] * (Math.PI / 180)) * rel_pos[1]
-    //              + Math.sin(this.orientation[1] * (Math.PI / 180)) * rel_pos[0];
-    //   console.log('coods: rel', rel_pos);
-    // }
-    // document.getElementById("value0").innerHTML = Math.round(rel_pos[0]*10)/10;
-    // document.getElementById("value1").innerHTML = Math.round(rel_pos[1]*10)/10;
-    // document.getElementById("value2").innerHTML = Math.round(rel_pos[2]*10)/10;
-
-
-    // rel_pos = [-1,0, 0]; // [-left +right, -back + front, ..]
-    // rel_pos = [rel_pos[0],rel_pos[1],0];
     this.spatSourceHandler.playSound(this.loader.buffers[1], rel_pos_sph);
   }
 
