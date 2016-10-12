@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 // import soundworks (server-side) and experience
 import * as soundworks from 'soundworks/server';
-import SoundfieldExperience from './SoundfieldExperience';
+import BinauralExperience from './BinauralExperience';
 import defaultConfig from './config/default';
 
 let config = null;
@@ -33,7 +33,7 @@ soundworks.server.setClientConfigDefinition((clientType, config, httpRequest) =>
 });
 
 // create the common server experience for both the soloists and the players
-const soundfieldExperience = new SoundfieldExperience(['player', 'soloist']);
+const soundfieldExperience = new BinauralExperience(['player']);
 
 // start the application
 soundworks.server.start();

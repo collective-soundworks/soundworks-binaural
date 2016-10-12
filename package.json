@@ -1,11 +1,11 @@
 {
-  "name": "soundfield",
+  "name": "binauralwhip",
   "authors": [
     "Benjamin Matuszewski",
     "Sébastien Robaszkiewicz",
     "Norbert Schnell"
   ],
-  "description": "Soundfield - Soundworks example application.",
+  "description": "BinauralWhip - Soundworks example application.",
   "version": "1.1.1",
   "license": "BSD-3-Clause",
   "scripts": {
@@ -17,13 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/collective-soundworks/soundworks-soundfield"
+    "url": "https://github.com/collective-soundworks/soundworks-binauralwhip"
   },
   "dependencies": {
     "babel-runtime": "^6.6.1",
     "debug": "^2.1.2",
     "soundworks": "collective-soundworks/soundworks.git#v1.1.1",
-    "source-map-support": "^0.4.0"
+    "source-map-support": "^0.4.0",
+    "binaural": "PyrApple/binauralFIR#next-gh-pages"
   },
   "devDependencies": {
     "babel-core": "^6.6.5",
