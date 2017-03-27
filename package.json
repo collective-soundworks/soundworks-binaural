@@ -1,9 +1,9 @@
 {
-  "name": "binauralwhip",
+  "name": "soundworks-binaural",
   "authors": [
     "Benjamin Matuszewski",
-    "Sébastien Robaszkiewicz",
-    "Norbert Schnell"
+    "Norbert Schnell",
+    "David Poirier-Quinot"
   ],
   "description": "BinauralWhip - Soundworks example application.",
   "version": "1.1.1",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/collective-soundworks/soundworks-binauralwhip"
+    "url": "https://github.com/collective-soundworks/soundworks-binaural.git"
   },
   "dependencies": {
     "babel-runtime": "^6.6.1",
     "debug": "^2.1.2",
     "soundworks": "collective-soundworks/soundworks.git#v1.1.1",
     "source-map-support": "^0.4.0",
-    "binaural": "PyrApple/binauralFIR#next-gh-pages"
+    "binaural": "Ircam-RnD/binauralFIR#next-gh-pages"
   },
   "devDependencies": {
     "babel-core": "^6.6.5",
