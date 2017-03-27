@@ -4,17 +4,16 @@ import * as soundworks from 'soundworks/client';
 const audioContext = soundworks.audioContext;
 
 export default class SpatSourcesHandler {
-  constructor(buffer) {
+  constructor() {
 
     // create binaural panner
-    this.numberOfSources = 2;
     const initPos = [0.0, 0.0, 1.0];
     this.binauralPanner = new binaural.audio.BinauralPanner({
         audioContext: audioContext,
         crossfadeDuration: 0.05, // in seconds
         coordinateSystem: 'spat4Spherical', // [azimuth, elevation, distance]
-        sourceCount: 2,
-        sourcePositions: [initPos, initPos], // initial position
+        sourceCount: 1,
+        sourcePositions: [initPos], // initial position
     });
 
     // get HRTF
@@ -30,9 +29,6 @@ export default class SpatSourcesHandler {
     // connect graph
     this.binauralPanner.connectOutputs(this.gainNode);
     this.gainNode.connect(audioContext.destination);
-
-    // add constant source
-    this.playSound(buffer, [1.0,0.0,1.0], 0, true);
   }
 
   playSound(buffer, pos, srcID = 1, loop = false){
@@ -52,17 +48,19 @@ export default class SpatSourcesHandler {
 
   setListenerOrientation(ori){
 
-    // update sources orientation
-    // for (let srcID = 0, pos = [0,0,0]; srcID < this.numberOfSources; srcID++) {
+    // update listener orientation
+    this.binauralPanner.listenerView = ori;
+    // console.log('listener ori:', this.binauralPanner.listenerView);
+    this._updateBinauralPanner();
+
+    // update sources orientation (same end result)
+    // for (let srcID = 0, pos = [0,0,0]; srcID < this.binauralPanner.sourceCount; srcID++) {
     //   pos = this.binauralPanner.getSourcePositionByIndex(srcID);
     //   pos[0] += this.ori[0];
     //   console.log('source:', srcID, ' - pos:', pos);
     //   this.binauralPanner.setSourcePositionByIndex(srcID, pos);
     // }
     // ori[0] = -ori[0];
-    this.binauralPanner.listenerView = ori;
-    console.log('listener ori:', this.binauralPanner.listenerView);
-    this._updateBinauralPanner();
   }
 
   getListenerOrientation(){
@@ -71,7 +69,6 @@ export default class SpatSourcesHandler {
 
   _updateBinauralPanner(){
     window.requestAnimationFrame(() => {
-      // console.log('update bin:', )
         this.binauralPanner.update();
     });
   }
