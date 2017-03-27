@@ -5,7 +5,7 @@
     "Norbert Schnell",
     "David Poirier-Quinot"
   ],
-  "description": "BinauralWhip - Soundworks example application.",
+  "description": "soundworks-binaural - Soundworks example application using the binauralFIR package.",
   "version": "1.1.1",
   "license": "BSD-3-Clause",
   "scripts": {
